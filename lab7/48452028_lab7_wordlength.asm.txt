@@ -1,0 +1,45 @@
+# Assessment 2: Count the characters in a word
+
+.data
+prompt:  .asciiz "Enter a word: " # Input prompt
+output:  .asciiz "The number of characters is: " # Output message
+newline: .asciiz "\\n" # Newline string
+buffer:  .space 64 # Reserve 64 bytes for the input word
+
+.text
+.globl main
+
+main:
+    li   $v0, 4                 # Select print string service
+    la   $a0, prompt            # Load prompt address
+    syscall                     # Display input prompt
+
+    li   $v0, 8                 # TODO setup: Select read string service
+    la   $a0, buffer            # TODO 1: Load address of buffer using la
+    li   $a1, 64                # TODO 2: Set maximum input length to 64
+    syscall                     # Read the word into the buffer
+
+    la   $t0, buffer            # Point to the first character
+    li   $t1, 0                 # Initialize character counter to zero
+    li   $t3, 10                # Store ASCII code for newline
+
+loop:
+    lb   $t2, 0($t0)             # TODO 3: Load current byte using lb
+    beq  $t2, $zero, finish      # TODO 4: Branch to finish if byte is zero
+    beq  $t2, $t3, finish        # Stop when newline is found
+    addi $t1, $t1, 1             # TODO 5: Increase character counter by one
+    addi $t0, $t0, 1             # TODO 6: Move pointer to the next byte
+    j    loop                    # Repeat the loop for the next character
+
+finish:
+    li   $v0, 4                  # Select print string service
+    la   $a0, output             # Load output message address
+    syscall                      # Display output message
+    li   $v0, 1                  # Select print integer service
+    move $a0, $t1                # TODO 7: Move character count into $a0
+    syscall                      # Print character count
+    li   $v0, 4                  # Select print string service
+    la   $a0, newline            # Load newline address
+    syscall                      # Print newline
+    li   $v0, 10                 # Select exit service
+    syscall                      # End program

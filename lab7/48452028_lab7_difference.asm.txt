@@ -1,0 +1,51 @@
+# Assessment 1: Sign of the difference of two numbers
+
+.data
+prompt1: .asciiz "Enter the first number: " # First prompt
+prompt2: .asciiz "Enter the second number: " # Second prompt
+less:    .asciiz "The difference is less than 0\\n" # Negative result message
+greater: .asciiz "The difference is greater than 0\\n" # Positive result message
+equal:   .asciiz "The difference is equal to 0\\n" # Zero result message
+
+.text
+.globl main
+
+main:
+    li   $v0, 4             # Select print string service
+    la   $a0, prompt1       # Load first prompt address
+    syscall                 # Display first prompt
+    li   $v0, 5             # Select read integer service
+    syscall                 # Read first number
+    move $t0, $v0           # Save first number in $t0
+
+    li   $v0, 4             # Select print string service
+    la   $a0, prompt2       # Load second prompt address
+    syscall                 # Display second prompt
+    li   $v0, 5             # Select read integer service
+    syscall                 # Read second number
+
+    move $t1, $v0           # TODO 1: Copy $v0 into $t1 using move
+    sub  $t2, $t0, $t1      # TODO 2: Calculate $t0 - $t1 using sub
+    bltz $t2, is_less       # TODO 3: Branch to is_less if $t2 is negative
+    bgtz $t2, is_greater    # TODO 4: Branch to is_greater if $t2 is positive
+
+    # If execution reaches here, the difference is exactly zero
+    li   $v0, 4             # Select print string service
+    la   $a0, equal         # Load equal message address
+    syscall                 # Display equal message
+    j    done               # Skip the other messages
+
+is_less:
+    li   $v0, 4             # Select print string service
+    la   $a0, less          # TODO 5: Load address of less using la
+    syscall                 # Display negative message
+    j    done               # TODO 6: Jump to done using j
+
+is_greater:
+    li   $v0, 4             # Select print string service
+    la   $a0, greater       # Load positive message address
+    syscall                 # Display positive message
+
+done:
+    li   $v0, 10            # Select exit service
+    syscall                 # End program
